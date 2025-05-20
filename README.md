@@ -19,7 +19,7 @@ $ pip install git+https://github.com/enku/defy-larry
 
 Add `defy_larry` to your list of larry plugins, e.g.:
 
-```toml
+```
 # ~/.config/larry.cfg
 
 [larry]
