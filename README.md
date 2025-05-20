@@ -45,7 +45,7 @@ intensity = 0.6
 Restart larry and enjoy!
 
 
-# Warning
+### Warning
 
 The keyboard's flash memory is written whenever larry changes colors. This
 flash memory has a limited lifespan, so care should be taken not to run this
