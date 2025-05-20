@@ -30,11 +30,9 @@ class Keyboard:
 
     def set_palette(self, colors: ColorList) -> None:
         """Set the keyboard palette given the colors"""
-        if not colors:
-            return
-
-        color_str = " ".join(str(i) for color in colors for i in color.to_rgbw())
-        self.send(f"palette {color_str}")
+        if colors:
+            color_str = " ".join(str(i) for color in colors for i in color.to_rgbw())
+            self.send(f"palette {color_str}")
 
     def send(self, command: str) -> None:
         """Send the given command to the keyboard"""
