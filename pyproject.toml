@@ -1,0 +1,47 @@
+[project]
+name = "defy-larry"
+dynamic = ["version"]
+description = "larry plugin to colorize Dygma (Defy) keyboard LEDs"
+authors = [
+    {name = "Albert Hopkins", email = "marduk@letterboxes.org"},
+]
+dependencies = ["larry @ git+https://github.com/enku/larry.git", "pyserial>=3.5", "types-pyserial>=3.5.0.20250326", "scikit-learn>=1.6.1"]
+requires-python = ">=3.13"
+readme = "README.md"
+license = {text = "GPL3+"}
+
+[project.entry-points."larry.plugins"]
+defy_larry = "defy_larry:plugin"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
+version = { source = "scm" }
+
+[tool.black]
+skip-magic-trailing-comma = true
+
+[tool.coverage.run]
+source = ["defy_larry"]
+omit = []
+
+
+[tool.mypy]
+exclude = ["kmeans.py"]
+
+[tool.isort]
+profile = "black"
+
+[dependency-groups]
+dev = [
+    "pylint>=3.3.7",
+    "black>=25.1.0",
+    "isort>=6.0.1",
+    "mypy>=1.15.0",
+    "typos>=1.32.0",
+    "coverage>=7.8.0",
+]
