@@ -33,9 +33,7 @@ class Keyboard:
         if not colors:
             return
 
-        color_str = " ".join(
-            f"{r} {g} {b} {w}" for color in colors for r, g, b, w in [color.to_rgbw()]
-        )
+        color_str = " ".join(str(i) for color in colors for i in color.to_rgbw())
         self.send(f"palette {color_str}")
 
     def send(self, command: str) -> None:
