@@ -20,7 +20,6 @@ from larry.config import ConfigType
 from larry.utils import clip
 
 from defy_larry.keyboard import Keyboard
-from defy_larry.kmeans import get_centroids
 
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
@@ -48,14 +47,9 @@ def colorize_keyboard(device: str, colors: ColorList, config: ConfigType) -> Non
         colors = (
             list(Color.generate_from(colors, palette_size))
             if len(colors) <= palette_size
-            else dominant_colors(colors, palette_size)
+            else Color.dominant(colors, palette_size)
         )
         kb.set_palette([enhance(c, config).intensify(intensity) for c in colors])
-
-
-def dominant_colors(colors: ColorList, size: int) -> ColorList:
-    """Return the size dominant colors from the ColorList"""
-    return [Color(int(i[0]), int(i[1]), int(i[2])) for i in get_centroids(colors, size)]
 
 
 def enhance(color: Color, config: ConfigType, default: str = "none") -> Color:

@@ -4,11 +4,10 @@ import random
 from contextlib import redirect_stderr
 from unittest import TestCase, mock
 
-import numpy as np
 import serial
 from larry.color import Color
 
-from defy_larry import dominant_colors, plugin
+from defy_larry import plugin
 
 from . import make_colors, make_config
 
@@ -75,27 +74,3 @@ class PluginTests(TestCase):
         plugin(colors, config)
 
         self.assertEqual(keyboard_open.call_count, 2)
-
-
-class DominantColorsTests(TestCase):
-    def test(self) -> None:
-        original_state = np.random.get_state()
-        np.random.seed(1)
-        colors = make_colors(
-            "#FF5733",
-            "#33FF57",
-            "#3357FF",
-            "#FFFF33",
-            "#FF33FF",
-            "#33FFFF",
-            "#FF8C00",
-            "#8A2BE2",
-            "#FFD700",
-            "#ADFF2F",
-        )
-        try:
-            new_colors = dominant_colors(colors, 3)
-        finally:
-            np.random.set_state(original_state)
-
-        self.assertEqual(make_colors("#943cf5", "#eebe1d", "#33ffab"), new_colors)

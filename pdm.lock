@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:123583faae8a12254c82f0a424d1ac5c04e0bed2667b22a8992e9d46ec9cd1a5"
+content_hash = "sha256:1840aaa9245d34e20b1c36785cb6fdbcc4b40a301b34618f6da9950019549a73"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -54,7 +54,7 @@ files = [
 
 [[package]]
 name = "click"
-version = "8.2.0"
+version = "8.2.1"
 requires_python = ">=3.10"
 summary = "Composable command line interface toolkit"
 groups = ["dev"]
@@ -62,8 +62,8 @@ dependencies = [
     "colorama; platform_system == \"Windows\"",
 ]
 files = [
-    {file = "click-8.2.0-py3-none-any.whl", hash = "sha256:6b303f0b2aa85f1cb4e5303078fadcbcd4e476f114fab9b5007005711839325c"},
-    {file = "click-8.2.0.tar.gz", hash = "sha256:f5452aeddd9988eefa20f90f05ab66f17fce1ee2a36907fd30b05bbb5953814d"},
+    {file = "click-8.2.1-py3-none-any.whl", hash = "sha256:61a3265b914e850b85317d0b3109c7f8cd35a670f963866005d6ef1d5175a12b"},
+    {file = "click-8.2.1.tar.gz", hash = "sha256:27c491cc05d968d271d5a1db13e3b5a184636d9d930f148c50b038f0d0646202"},
 ]
 
 [[package]]
@@ -155,16 +155,17 @@ files = [
 
 [[package]]
 name = "larry"
-version = "0.1.dev336"
+version = "0.1.dev337"
 requires_python = ">=3.11"
 git = "https://github.com/enku/larry.git"
-revision = "8e0a71f2ed2b40766c0b125062107710205c6087"
+revision = "75fbc96a0742fd941b93fed4f0605c0b08fe1a13"
 summary = "Colorify your desktop with Larry the Cow"
 groups = ["default"]
 dependencies = [
     "Pillow>=8.1.0",
     "numpy>=1.20",
     "platformdirs>=3.2.0",
+    "scikit-learn>=1.6.1",
     "scipy>=1.15.1",
 ]
 
