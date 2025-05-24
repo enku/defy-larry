@@ -57,7 +57,10 @@ def colorize_keyboard(device: str, colors: ColorList, config: ConfigType) -> Non
             if len(colors) <= palette_size
             else Color.dominant(colors, palette_size)
         )
-        kb.set_palette([enhance(c, config).intensify(intensity) for c in colors])
+        colors = [enhance(c, config).intensify(intensity) for c in colors]
+        for index, color in get_overrides(config):
+            colors[index] = color
+        kb.set_palette(colors)
 
 
 def enhance(color: Color, config: ConfigType, default: str = "none") -> Color:
@@ -71,6 +74,19 @@ def enhance(color: Color, config: ConfigType, default: str = "none") -> Color:
             color = color.soften()
 
     return color
+
+
+def get_overrides(config: ConfigType) -> list[tuple[int, Color]]:
+    """Given the config return a list of (index, Color) palette overrides"""
+    overrides = []
+
+    for item in (config.get("override") or "").strip().split():
+        parts = item.partition("=")
+
+        if all(parts):
+            overrides.append((int(parts[0]), Color(parts[2])))
+
+    return overrides
 
 
 def errmsg(message: str) -> None:

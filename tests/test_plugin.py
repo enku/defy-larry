@@ -4,6 +4,7 @@ import random
 from contextlib import redirect_stderr
 from unittest import TestCase, mock
 
+import numpy as np
 import serial
 from larry.color import Color
 
@@ -15,6 +16,11 @@ from . import make_colors, make_config
 @mock.patch("larry.color.random", random.Random(1))
 @mock.patch("defy_larry.Keyboard.open")
 class PluginTests(TestCase):
+    def setUp(self) -> None:
+        super().setUp()
+
+        np.random.rand(1)
+
     def test(self, keyboard_open: mock.Mock) -> None:
         colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
         config = make_config()
@@ -33,6 +39,23 @@ class PluginTests(TestCase):
             ]
         )
 
+    def test_override_option(self, keyboard_open: mock.Mock) -> None:
+        colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
+        config = make_config(override="2=000000")
+
+        kb = keyboard_open.return_value.__enter__.return_value
+        kb.get_palette.return_value = [Color() for _ in range(3)]
+        plugin(colors, config)
+
+        kb.assert_has_calls(
+            [
+                mock.call.get_palette(),
+                mock.call.set_palette(
+                    [Color("#ff7f95"), Color("#ffe77f"), Color("#000000")]
+                ),
+            ]
+        )
+
     def test_soften_effect(self, keyboard_open: mock.Mock) -> None:
         colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
         config = make_config(effect="soften")
@@ -46,7 +69,7 @@ class PluginTests(TestCase):
             [
                 mock.call.get_palette(),
                 mock.call.set_palette(
-                    [Color("#ffdfe4"), Color("#f0dc83"), Color("#d283f0")]
+                    [Color("#d283f0"), Color("#ffdfe4"), Color("#f0dc83")]
                 ),
             ]
         )
