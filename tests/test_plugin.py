@@ -7,7 +7,7 @@ from unittest import TestCase, mock
 import serial
 from larry.color import Color
 
-from defy_larry import plugin
+from defy_larry import errmsg, plugin
 
 from . import make_colors, make_config
 
@@ -74,3 +74,13 @@ class PluginTests(TestCase):
         plugin(colors, config)
 
         self.assertEqual(keyboard_open.call_count, 2)
+
+
+class ErrmsgTests(TestCase):
+    def test(self) -> None:
+        stderr = io.StringIO()
+
+        with redirect_stderr(stderr):
+            errmsg("This is a test")
+
+        self.assertEqual("This is a test\n", stderr.getvalue())

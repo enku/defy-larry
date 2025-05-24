@@ -31,11 +31,8 @@ def plugin(colors: ColorList, config: ConfigType) -> None:
         try:
             colorize_keyboard(device, colors, config)
         except serial.SerialException as error:
-            print(
-                f"An occurred while attempting to colorize the {device} keyboard:",
-                file=sys.stderr,
-            )
-            print(f"{error}", file=sys.stderr)
+            errmsg(f"An occurred while attempting to colorize the {device} keyboard:")
+            errmsg(f"{error}")
 
 
 def colorize_keyboard(device: str, colors: ColorList, config: ConfigType) -> None:
@@ -63,3 +60,8 @@ def enhance(color: Color, config: ConfigType, default: str = "none") -> Color:
             color = color.soften()
 
     return color
+
+
+def errmsg(message: str) -> None:
+    """Print the given message to stderr"""
+    print(message, file=sys.stderr)
