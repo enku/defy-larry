@@ -7,7 +7,7 @@ from unittest import TestCase, mock
 import serial
 from larry.color import Color
 
-from defy_larry import errmsg, plugin
+from defy_larry import errmsg, maybe_colorize_keyboard, plugin
 
 from . import make_colors, make_config
 
@@ -74,6 +74,29 @@ class PluginTests(TestCase):
         plugin(colors, config)
 
         self.assertEqual(keyboard_open.call_count, 2)
+
+
+@mock.patch("defy_larry.colorize_keyboard")
+class MaybeColorizeKeyboardTests(TestCase):
+    def test(self, colorize_keyboard: mock.Mock) -> None:
+        colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
+        config = make_config()
+
+        is_colorized = maybe_colorize_keyboard("/dev/null", colors, config)
+
+        self.assertIs(True, is_colorized)
+
+        colorize_keyboard.side_effect = serial.SerialException("oops!")
+        stderr = io.StringIO()
+
+        with redirect_stderr(stderr):
+            is_colorized = maybe_colorize_keyboard("/dev/null", colors, config)
+
+        self.assertIs(False, is_colorized)
+        self.assertEqual(
+            "An occurred while attempting to colorize the /dev/null keyboard:\noops!\n",
+            stderr.getvalue(),
+        )
 
 
 class ErrmsgTests(TestCase):

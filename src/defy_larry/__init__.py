@@ -25,14 +25,25 @@ from defy_larry.keyboard import Keyboard
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """Dygma Defy plugin"""
     device_str = config.get("devices", fallback="") or "/dev/ttyACM0"
-    devices = device_str.strip().split()
 
-    for device in devices:
-        try:
-            colorize_keyboard(device, colors, config)
-        except serial.SerialException as error:
-            errmsg(f"An occurred while attempting to colorize the {device} keyboard:")
-            errmsg(f"{error}")
+    for device in device_str.strip().split():
+        maybe_colorize_keyboard(device, colors, config)
+
+
+def maybe_colorize_keyboard(device: str, colors: ColorList, config: ConfigType) -> bool:
+    """Colorize the keyboard at the given device using the given source colors
+
+    Return True.
+
+    If a SerialException occurs, write the message to stderr and return False
+    """
+    try:
+        colorize_keyboard(device, colors, config)
+        return True
+    except serial.SerialException as error:
+        errmsg(f"An occurred while attempting to colorize the {device} keyboard:")
+        errmsg(f"{error}")
+        return False
 
 
 def colorize_keyboard(device: str, colors: ColorList, config: ConfigType) -> None:
