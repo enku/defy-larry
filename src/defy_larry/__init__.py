@@ -21,6 +21,10 @@ from larry.utils import clip
 
 from defy_larry.keyboard import Keyboard
 
+# Value to use for the "luminize" effect. This should probably be made an option at some
+# point. I'm waiting until I move "enhance" into larry proper.
+LUMINANCE = 178.5
+
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """Dygma Defy plugin"""
@@ -72,6 +76,8 @@ def enhance(color: Color, config: ConfigType, default: str = "none") -> Color:
             color = color.pastelize()
         case "soften":
             color = color.soften()
+        case "luminize":
+            color = color.luminize(LUMINANCE)
 
     return color
 

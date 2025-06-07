@@ -51,7 +51,7 @@ class PluginTests(TestCase):
             [
                 mock.call.get_palette(),
                 mock.call.set_palette(
-                    [Color("#ff7f95"), Color("#ffe77f"), Color("#000000")]
+                    [Color("#db7fff"), Color("#ff7f95"), Color("#000000")]
                 ),
             ]
         )
@@ -70,6 +70,24 @@ class PluginTests(TestCase):
                 mock.call.get_palette(),
                 mock.call.set_palette(
                     [Color("#d283f0"), Color("#ffdfe4"), Color("#f0dc83")]
+                ),
+            ]
+        )
+
+    def test_luminize_effect(self, keyboard_open: mock.Mock) -> None:
+        colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
+        config = make_config(effect="luminize")
+
+        kb = keyboard_open.return_value.__enter__.return_value
+        kb.get_palette.return_value = [Color() for _ in range(3)]
+        plugin(colors, config)
+
+        keyboard_open.assert_called_once_with("/dev/null")
+        kb.assert_has_calls(
+            [
+                mock.call.get_palette(),
+                mock.call.set_palette(
+                    [Color("#d7a2ab"), Color("#deb916"), Color("#ff2cff")]
                 ),
             ]
         )
