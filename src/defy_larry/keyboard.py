@@ -39,6 +39,7 @@ class Keyboard:
         """Send the given command to the keyboard"""
         serial_device = self.serial_device
         serial_device.write(f"{command}\n".encode(ENCODING))
+        serial_device.flush()
 
     def receive(self) -> str:
         """Recieve a line from the keyboard"""
