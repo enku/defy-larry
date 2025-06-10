@@ -8,6 +8,7 @@ from larry.color import Color, ColorList
 
 BAUD_RATE = 115200
 ENCODING = "utf-8"
+TIMEOUT = 5.0
 
 
 class Keyboard:
@@ -52,7 +53,7 @@ class Keyboard:
 
         Closes the connection when the context ends.
         """
-        device = serial.Serial(port, BAUD_RATE)
+        device = serial.Serial(port, baudrate=BAUD_RATE, timeout=TIMEOUT)
         kb = cls(device)
 
         try:
