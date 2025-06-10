@@ -104,7 +104,10 @@ class OpenTests(TestCase):
         with keyboard.Keyboard.open(port) as kb:
             self.assertIsInstance(kb, keyboard.Keyboard)
             serial_class.assert_called_once_with(
-                port, baudrate=keyboard.BAUD_RATE, timeout=keyboard.TIMEOUT
+                port,
+                baudrate=keyboard.BAUD_RATE,
+                timeout=keyboard.TIMEOUT,
+                write_timeout=5.0,
             )
             serial_device = serial_class.return_value
             self.assertEqual(kb.serial_device, serial_device)

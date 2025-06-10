@@ -53,7 +53,9 @@ class Keyboard:
 
         Closes the connection when the context ends.
         """
-        device = serial.Serial(port, baudrate=BAUD_RATE, timeout=TIMEOUT)
+        device = serial.Serial(
+            port, baudrate=BAUD_RATE, timeout=TIMEOUT, write_timeout=TIMEOUT
+        )
         kb = cls(device)
 
         try:
