@@ -9,16 +9,10 @@ def make_colors(*color_str: str) -> ColorList:
     return [Color(s) for s in color_str]
 
 
-def make_config(
-    devices: list[str] | None = None, effect: str = "pastelize", override: str = ""
-) -> ConfigType:
-    if devices is None:
-        devices = ["/dev/null"]
-
+def make_config(effect: str = "pastelize", override: str = "") -> ConfigType:
     parser = configparser.ConfigParser()
     parser.add_section("defy_larry")
     config = ConfigType(parser, name="defy_larry")
-    config["devices"] = " ".join(devices)
     config["effect"] = effect
 
     if override:

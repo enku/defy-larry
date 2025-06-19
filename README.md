@@ -29,9 +29,6 @@ plugins = vim defy_larry
 In addition you can add configuration for the plugin::
 
 [plugins:defy_larry]
-# Defy keyboard devices (separated by whitespace)
-devices = /dev/ttyACM0
-
 # What effect to use to enhance the colors. Valid values are "soften",
 "pastelize" and "none". The default is "none".
 effect = pastelize

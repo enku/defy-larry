@@ -18,6 +18,7 @@ import serial
 from larry.color import Color, ColorList
 from larry.config import ConfigType
 from larry.utils import clip
+from serial.tools.list_ports import comports
 
 from defy_larry.keyboard import Keyboard
 
@@ -28,9 +29,9 @@ LUMINANCE = 178.5
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """Dygma Defy plugin"""
-    device_str = config.get("devices", fallback="") or "/dev/ttyACM0"
+    devices = [p.device for p in comports() if p.manufacturer == "DYGMA"]
 
-    for device in device_str.strip().split():
+    for device in devices:
         maybe_colorize_keyboard(device, colors, config)
 
 
