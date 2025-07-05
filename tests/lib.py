@@ -1,5 +1,6 @@
 # pylint: disable=missing-docstring
 import random as _random
+from typing import Sequence
 from unittest import mock
 
 import larry.color
@@ -7,6 +8,7 @@ import numpy as np
 import serial
 from unittest_fixtures import FixtureContext, Fixtures, fixture
 
+import defy_larry
 from defy_larry import keyboard as kb
 
 FC = FixtureContext
@@ -39,3 +41,12 @@ def random(_: Fixtures, seed: int = 1) -> FC[None]:
     with mock.patch.object(larry.color, "random", _random.Random(seed)):
         np.random.rand(seed)
         yield
+
+
+@fixture()
+def comports(_: Fixtures, devices: Sequence[str] = ("/dev/null",)) -> FC[Mock]:
+    with mock.patch.object(defy_larry, "comports") as mock_obj:
+        mock_obj.return_value = [
+            mock.Mock(manufacturer="DYGMA", device=device) for device in devices
+        ]
+        yield mock_obj

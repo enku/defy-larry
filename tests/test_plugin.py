@@ -12,13 +12,11 @@ from defy_larry import errmsg, maybe_colorize_keyboard, plugin
 from . import lib, make_colors, make_config
 
 
-@given(lib.keyboard_open, lib.random)
-@mock.patch("defy_larry.comports")
+@given(lib.keyboard_open, lib.random, lib.comports)
 class PluginTests(TestCase):
-    def test(self, comports: mock.Mock, fixtures: Fixtures) -> None:
+    def test(self, fixtures: Fixtures) -> None:
         colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
         config = make_config()
-        comports.return_value = [mock.Mock(manufacturer="DYGMA", device="/dev/null")]
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
@@ -33,10 +31,9 @@ class PluginTests(TestCase):
             ]
         )
 
-    def test_override_option(self, comports: mock.Mock, fixtures: Fixtures) -> None:
+    def test_override_option(self, fixtures: Fixtures) -> None:
         colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
         config = make_config(override="2=000000")
-        comports.return_value = [mock.Mock(manufacturer="DYGMA", device="/dev/null")]
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
@@ -50,10 +47,9 @@ class PluginTests(TestCase):
             ]
         )
 
-    def test_soften_effect(self, comports: mock.Mock, fixtures: Fixtures) -> None:
+    def test_soften_effect(self, fixtures: Fixtures) -> None:
         colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
         config = make_config(effect="soften")
-        comports.return_value = [mock.Mock(manufacturer="DYGMA", device="/dev/null")]
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
@@ -68,10 +64,9 @@ class PluginTests(TestCase):
             ]
         )
 
-    def test_luminize_effect(self, comports: mock.Mock, fixtures: Fixtures) -> None:
+    def test_luminize_effect(self, fixtures: Fixtures) -> None:
         colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
         config = make_config(effect="luminize")
-        comports.return_value = [mock.Mock(manufacturer="DYGMA", device="/dev/null")]
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
@@ -86,10 +81,9 @@ class PluginTests(TestCase):
             ]
         )
 
-    def test_serial_exception(self, comports: mock.Mock, fixtures: Fixtures) -> None:
+    def test_serial_exception(self, fixtures: Fixtures) -> None:
         colors = make_colors("red", "pink", "blue")
         config = make_config()
-        comports.return_value = [mock.Mock(manufacturer="DYGMA", device="/dev/null")]
         keyboard_open = fixtures.keyboard_open
         keyboard_open.side_effect = serial.SerialException("oh no!")
         stderr = io.StringIO()
@@ -102,10 +96,10 @@ class PluginTests(TestCase):
             stderr.getvalue(),
         )
 
-    def test_multiple_devices(self, comports: mock.Mock, fixtures: Fixtures) -> None:
+    def test_multiple_devices(self, fixtures: Fixtures) -> None:
         colors = make_colors("red", "pink", "blue")
         config = make_config()
-        comports.return_value = [
+        fixtures.comports.return_value = [
             mock.Mock(manufacturer="DYGMA", device="/dev/foo"),
             mock.Mock(manufacturer="DYGMA", device="/dev/bar"),
         ]
