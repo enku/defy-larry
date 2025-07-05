@@ -114,7 +114,7 @@ class PluginTests(TestCase):
 
 @mock.patch("defy_larry.colorize_keyboard")
 class MaybeColorizeKeyboardTests(TestCase):
-    def test(self, colorize_keyboard: mock.Mock) -> None:
+    def test_colorizes(self, colorize_keyboard: mock.Mock) -> None:
         colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
         config = make_config()
 
@@ -122,6 +122,9 @@ class MaybeColorizeKeyboardTests(TestCase):
 
         self.assertIs(True, is_colorized)
 
+    def test_with_exception(self, colorize_keyboard: mock.Mock) -> None:
+        colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
+        config = make_config()
         colorize_keyboard.side_effect = serial.SerialException("oops!")
         stderr = io.StringIO()
 
