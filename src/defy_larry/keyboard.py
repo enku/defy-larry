@@ -54,7 +54,7 @@ class Keyboard:
         """Recieve a line from the keyboard"""
         serial_device = self.serial_device
 
-        return serial_device.readline().decode(ENCODING).rstrip()
+        return serial_device.read_until().decode(ENCODING).rstrip()
 
     @classmethod
     @contextmanager
