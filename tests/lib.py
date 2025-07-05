@@ -23,3 +23,9 @@ def serial_device(fixtures: Fixtures, port: str = "/dev/ttyACM0") -> Mock:
     return fixtures.serial_class(
         port, baudrate=kb.BAUD_RATE, timeout=kb.TIMEOUT, write_timeout=kb.TIMEOUT
     )
+
+
+@fixture()
+def keyboard_open(_: Fixtures) -> FC[Mock]:
+    with mock.patch.object(kb.Keyboard, "open") as mock_obj:
+        yield mock_obj
