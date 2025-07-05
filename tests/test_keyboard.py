@@ -6,7 +6,7 @@ from unittest_fixtures import Fixtures, given
 
 from defy_larry import keyboard
 
-from . import lib
+from . import lib, make_palette_str
 
 
 @given(lib.serial_device)
@@ -24,16 +24,6 @@ class GetPaletteTests(TestCase):
     def test(self, fixtures: Fixtures):
         serial_device = fixtures.serial_device
         kb = keyboard.Keyboard(serial_device)
-        palette_str = (
-            b"0 126 128 127 0 31 128 127 99 128 0 127 0 44 128 127 61 128 0 127"
-            b" 0 128 38 127 128 68 0 127 128 0 53 127 0 48 128 127 22 128 0 127"
-            b" 0 73 128 127 96 0 128 127 128 78 0 127 128 81 0 127 56 128 0 127"
-            b" 128 15 0 127 \r\n"
-        )
-        serial_device.readline.return_value = palette_str
-
-        colors = kb.get_palette()
-
         expected = [
             Color(127, 253, 255),
             Color(127, 158, 255),
@@ -52,6 +42,10 @@ class GetPaletteTests(TestCase):
             Color(183, 255, 127),
             Color(255, 142, 127),
         ]
+        serial_device.readline.return_value = make_palette_str(expected)
+
+        colors = kb.get_palette()
+
         self.assertEqual(expected, colors)
 
         serial_device.write.assert_called_once_with(b"palette\n")
