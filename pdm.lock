@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:1840aaa9245d34e20b1c36785cb6fdbcc4b40a301b34618f6da9950019549a73"
+content_hash = "sha256:4e91bd591310ca990a4938f9d1bcf8505c2fe12a8cbea757926ef60525b95b4f"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -507,4 +507,15 @@ files = [
     {file = "typos-1.33.1-py3-none-win32.whl", hash = "sha256:88717b9849faa363534b79fa20526d1e9ada506501c9f0f4ab52fdbc9085fa8a"},
     {file = "typos-1.33.1-py3-none-win_amd64.whl", hash = "sha256:05dc54433a296acde0bfb729dda122ff86723568f2d38f8a9de8708b3d4866dc"},
     {file = "typos-1.33.1.tar.gz", hash = "sha256:ae5905af0925cee3ea97cd3372c5f570b67547b6b8af6b95c678b310fbec55c9"},
+]
+
+[[package]]
+name = "unittest-fixtures"
+version = "1.0.0"
+requires_python = ">=3.11"
+summary = "A small library for loading unittest fixtures"
+groups = ["dev"]
+files = [
+    {file = "unittest_fixtures-1.0.0-py3-none-any.whl", hash = "sha256:3001fdc9f9354537208dbf5f0655198fa838c513f99d84b448117b4eec247e40"},
+    {file = "unittest_fixtures-1.0.0.tar.gz", hash = "sha256:361d6d4d5faa5b3951574560f51ff1201caf393d92191f8ef202a590a7ccc897"},
 ]

@@ -1,24 +1,28 @@
 # pylint: disable=missing-docstring
-from unittest import TestCase, mock
+from unittest import TestCase
 
-import serial
 from larry.color import Color
+from unittest_fixtures import Fixtures, given
 
 from defy_larry import keyboard
 
+from . import lib
 
+
+@given(lib.serial_device)
 class InitializerTests(TestCase):
-    def test(self) -> None:
-        serial_device = mock.Mock(spec=serial.Serial)()
+    def test(self, fixtures: Fixtures) -> None:
+        serial_device = fixtures.serial_device
 
         kb = keyboard.Keyboard(serial_device)
 
         self.assertEqual(kb.serial_device, serial_device)
 
 
+@given(lib.serial_device)
 class GetPaletteTests(TestCase):
-    def test(self):
-        serial_device = mock.Mock(spec=serial.Serial)()
+    def test(self, fixtures: Fixtures):
+        serial_device = fixtures.serial_device
         kb = keyboard.Keyboard(serial_device)
         palette_str = (
             b"0 126 128 127 0 31 128 127 99 128 0 127 0 44 128 127 61 128 0 127"
@@ -53,9 +57,10 @@ class GetPaletteTests(TestCase):
         serial_device.write.assert_called_once_with(b"palette\n")
 
 
+@given(lib.serial_device)
 class SetPaletteTests(TestCase):
-    def test(self) -> None:
-        serial_device = mock.Mock(spec=serial.Serial)()
+    def test(self, fixtures: Fixtures) -> None:
+        serial_device = fixtures.serial_device
         kb = keyboard.Keyboard(serial_device)
         colors = [
             Color(127, 253, 255),
@@ -87,8 +92,8 @@ class SetPaletteTests(TestCase):
         )
         serial_device.write.assert_called_once_with(expected)
 
-    def test_empty_color_list(self) -> None:
-        serial_device = mock.Mock(spec=serial.Serial)()
+    def test_empty_color_list(self, fixtures: Fixtures) -> None:
+        serial_device = fixtures.serial_device
         kb = keyboard.Keyboard(serial_device)
 
         kb.set_palette([])
@@ -96,13 +101,14 @@ class SetPaletteTests(TestCase):
         serial_device.write.assert_not_called()
 
 
-@mock.patch.object(keyboard.serial, "Serial", spec=serial.Serial)
+@given(lib.serial_class)
 class OpenTests(TestCase):
-    def test(self, serial_class: mock.Mock):
+    def test(self, fixtures: Fixtures):
         port = "/dev/null"
 
         with keyboard.Keyboard.open(port) as kb:
             self.assertIsInstance(kb, keyboard.Keyboard)
+            serial_class = fixtures.serial_class
             serial_class.assert_called_once_with(
                 port,
                 baudrate=keyboard.BAUD_RATE,
