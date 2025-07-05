@@ -1,5 +1,6 @@
 """Dygma Keyboard interface"""
 
+import sys
 from contextlib import contextmanager
 from typing import Generator, Self
 
@@ -19,15 +20,23 @@ class Keyboard:
 
     def get_palette(self) -> ColorList:
         """Return the LED color pallete"""
+        palette: ColorList = []
+        add = palette.append
 
         self.send("palette")
         response = self.receive()
         ints = [int(i) for i in response.strip().split()]
 
-        return [
-            Color.from_rgbw((ints[i], ints[i + 1], ints[i + 2], ints[i + 3]))
-            for i in range(0, len(ints), 4)
-        ]
+        for i in range(0, len(ints), 4):
+            try:
+                add(Color.from_rgbw((ints[i], ints[i + 1], ints[i + 2], ints[i + 3])))
+            except IndexError:
+                print(
+                    "Warning: keyboard palette length was not a multiple of 4.",
+                    file=sys.stderr,
+                )
+
+        return palette
 
     def set_palette(self, colors: ColorList) -> None:
         """Set the keyboard palette given the colors"""

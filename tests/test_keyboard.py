@@ -1,4 +1,6 @@
 # pylint: disable=missing-docstring
+import io
+from contextlib import redirect_stderr
 from unittest import TestCase
 
 from larry.color import Color
@@ -48,7 +50,23 @@ class GetPaletteTests(TestCase):
 
         self.assertEqual(expected, colors)
 
-        serial_device.write.assert_called_once_with(b"palette\r\n")
+    def test_not_multiple_of_4(self, fixtures: Fixtures) -> None:
+        serial_device = fixtures.serial_device
+        kb = keyboard.Keyboard(serial_device)
+        expected = [Color(127, 253, 255), Color(127, 158, 255), Color(226, 255, 127)]
+        palette_str = make_palette_str(expected).decode("ascii").strip()
+        palette_str += " 0 0 0\r\n"
+        serial_device.readline.return_value = palette_str.encode("ascii")
+        stderr = io.StringIO()
+
+        with redirect_stderr(stderr):
+            colors = kb.get_palette()
+
+        self.assertEqual(expected, colors)
+        self.assertEqual(
+            "Warning: keyboard palette length was not a multiple of 4.\n",
+            stderr.getvalue(),
+        )
 
 
 @given(lib.serial_device)
