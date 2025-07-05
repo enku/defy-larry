@@ -50,3 +50,9 @@ def comports(_: Fixtures, devices: Sequence[str] = ("/dev/null",)) -> FC[Mock]:
             mock.Mock(manufacturer="DYGMA", device=device) for device in devices
         ]
         yield mock_obj
+
+
+@fixture()
+def colorize_keyboard(_: Fixtures) -> FC[Mock]:
+    with mock.patch.object(defy_larry, "colorize_keyboard") as mock_obj:
+        yield mock_obj

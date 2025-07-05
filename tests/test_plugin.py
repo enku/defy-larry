@@ -112,19 +112,21 @@ class PluginTests(TestCase):
         self.assertEqual(keyboard_open.call_count, 2)
 
 
-@mock.patch("defy_larry.colorize_keyboard")
+@given(lib.colorize_keyboard)
 class MaybeColorizeKeyboardTests(TestCase):
-    def test_colorizes(self, colorize_keyboard: mock.Mock) -> None:
+    def test_colorizes(self, fixtures: Fixtures) -> None:
         colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
         config = make_config()
 
         is_colorized = maybe_colorize_keyboard("/dev/null", colors, config)
 
         self.assertIs(True, is_colorized)
+        fixtures.colorize_keyboard.assert_called_once_with("/dev/null", colors, config)
 
-    def test_with_exception(self, colorize_keyboard: mock.Mock) -> None:
+    def test_with_exception(self, fixtures: Fixtures) -> None:
         colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
         config = make_config()
+        colorize_keyboard = fixtures.colorize_keyboard
         colorize_keyboard.side_effect = serial.SerialException("oops!")
         stderr = io.StringIO()
 
