@@ -1,6 +1,9 @@
 # pylint: disable=missing-docstring
+import random as _random
 from unittest import mock
 
+import larry.color
+import numpy as np
 import serial
 from unittest_fixtures import FixtureContext, Fixtures, fixture
 
@@ -29,3 +32,10 @@ def serial_device(fixtures: Fixtures, port: str = "/dev/ttyACM0") -> Mock:
 def keyboard_open(_: Fixtures) -> FC[Mock]:
     with mock.patch.object(kb.Keyboard, "open") as mock_obj:
         yield mock_obj
+
+
+@fixture()
+def random(_: Fixtures, seed: int = 1) -> FC[None]:
+    with mock.patch.object(larry.color, "random", _random.Random(seed)):
+        np.random.rand(seed)
+        yield

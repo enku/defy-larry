@@ -1,10 +1,8 @@
 # pylint: disable=missing-docstring
 import io
-import random
 from contextlib import redirect_stderr
 from unittest import TestCase, mock
 
-import numpy as np
 import serial
 from larry.color import Color
 from unittest_fixtures import Fixtures, given
@@ -14,15 +12,9 @@ from defy_larry import errmsg, maybe_colorize_keyboard, plugin
 from . import lib, make_colors, make_config
 
 
-@given(lib.keyboard_open)
-@mock.patch("larry.color.random", random.Random(1))
+@given(lib.keyboard_open, lib.random)
 @mock.patch("defy_larry.comports")
 class PluginTests(TestCase):
-    def setUp(self) -> None:
-        super().setUp()
-
-        np.random.rand(1)
-
     def test(self, comports: mock.Mock, fixtures: Fixtures) -> None:
         colors = make_colors("#a916e2", "#ffc0cb", "#e2bd16")
         config = make_config()
@@ -37,9 +29,7 @@ class PluginTests(TestCase):
         kb.assert_has_calls(
             [
                 mock.call.get_palette(),
-                mock.call.set_palette(
-                    [Color("#ffe77f"), Color("#ff7f95"), Color("#db7fff")]
-                ),
+                mock.call.set_palette(make_colors("#ffe77f", "#ff7f95", "#db7fff")),
             ]
         )
 
@@ -56,9 +46,7 @@ class PluginTests(TestCase):
         kb.assert_has_calls(
             [
                 mock.call.get_palette(),
-                mock.call.set_palette(
-                    [Color("#db7fff"), Color("#ff7f95"), Color("#000000")]
-                ),
+                mock.call.set_palette(make_colors("#ffe77f", "#ff7f95", "#000000")),
             ]
         )
 
@@ -76,9 +64,7 @@ class PluginTests(TestCase):
         kb.assert_has_calls(
             [
                 mock.call.get_palette(),
-                mock.call.set_palette(
-                    [Color("#d283f0"), Color("#ffdfe4"), Color("#f0dc83")]
-                ),
+                mock.call.set_palette(make_colors("#f0dc83", "#ffdfe4", "#d283f0")),
             ]
         )
 
@@ -96,9 +82,7 @@ class PluginTests(TestCase):
         kb.assert_has_calls(
             [
                 mock.call.get_palette(),
-                mock.call.set_palette(
-                    [Color("#d7a2ab"), Color("#deb916"), Color("#ff2cff")]
-                ),
+                mock.call.set_palette(make_colors("#deb916", "#d7a2ab", "#ff2cff")),
             ]
         )
 
