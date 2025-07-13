@@ -26,7 +26,7 @@ version = { source = "scm" }
 skip-magic-trailing-comma = true
 
 [tool.coverage.run]
-source = ["defy_larry"]
+source = ["defy_larry", "tests"]
 omit = []
 
 
