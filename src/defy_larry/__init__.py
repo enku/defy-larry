@@ -29,9 +29,7 @@ LUMINANCE = 178.5
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
     """Dygma Defy plugin"""
-    devices = [p.device for p in comports() if p.manufacturer == "DYGMA"]
-
-    for device in devices:
+    for device in [p.device for p in comports() if p.manufacturer == "DYGMA"]:
         maybe_colorize_keyboard(device, colors, config)
 
 
