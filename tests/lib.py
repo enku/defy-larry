@@ -1,4 +1,4 @@
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring,redefined-outer-name
 import random as _random
 from typing import Sequence
 from unittest import mock
@@ -10,6 +10,8 @@ from unittest_fixtures import FixtureContext, Fixtures, fixture
 
 import defy_larry
 from defy_larry import keyboard as kb
+
+from . import make_colors
 
 FC = FixtureContext
 Mock = mock.Mock
@@ -56,3 +58,10 @@ def comports(_: Fixtures, devices: Sequence[str] = ("/dev/null",)) -> FC[Mock]:
 def colorize_keyboard(_: Fixtures) -> FC[Mock]:
     with mock.patch.object(defy_larry, "colorize_keyboard") as mock_obj:
         yield mock_obj
+
+
+@fixture()
+def colors(
+    _: Fixtures, colors: str = "#a916e2 #ffc0cb #e2bd16"
+) -> list[larry.color.Color]:
+    return make_colors(*colors.split())
