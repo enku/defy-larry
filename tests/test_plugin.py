@@ -9,14 +9,14 @@ from unittest_fixtures import Fixtures, given
 
 from defy_larry import errmsg, maybe_colorize_keyboard, plugin
 
-from . import lib, make_colors, make_config
+from . import lib
 
 
 @given(lib.keyboard_open, lib.random, lib.comports, lib.colors)
 class PluginTests(TestCase):
     def test(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
-        config = make_config()
+        config = lib.make_config()
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
@@ -27,13 +27,13 @@ class PluginTests(TestCase):
         kb.assert_has_calls(
             [
                 mock.call.get_palette(),
-                mock.call.set_palette(make_colors("#ffe77f", "#ff7f95", "#db7fff")),
+                mock.call.set_palette(lib.make_colors("#ffe77f", "#ff7f95", "#db7fff")),
             ]
         )
 
     def test_override_option(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
-        config = make_config(override="2=000000")
+        config = lib.make_config(override="2=000000")
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
@@ -43,13 +43,13 @@ class PluginTests(TestCase):
         kb.assert_has_calls(
             [
                 mock.call.get_palette(),
-                mock.call.set_palette(make_colors("#ffe77f", "#ff7f95", "#000000")),
+                mock.call.set_palette(lib.make_colors("#ffe77f", "#ff7f95", "#000000")),
             ]
         )
 
     def test_soften_effect(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
-        config = make_config(effect="soften")
+        config = lib.make_config(effect="soften")
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
@@ -60,13 +60,13 @@ class PluginTests(TestCase):
         kb.assert_has_calls(
             [
                 mock.call.get_palette(),
-                mock.call.set_palette(make_colors("#f0dc83", "#ffdfe4", "#d283f0")),
+                mock.call.set_palette(lib.make_colors("#f0dc83", "#ffdfe4", "#d283f0")),
             ]
         )
 
     def test_luminize_effect(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
-        config = make_config(effect="luminize")
+        config = lib.make_config(effect="luminize")
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
@@ -77,13 +77,13 @@ class PluginTests(TestCase):
         kb.assert_has_calls(
             [
                 mock.call.get_palette(),
-                mock.call.set_palette(make_colors("#deb916", "#d7a2ab", "#ff2cff")),
+                mock.call.set_palette(lib.make_colors("#deb916", "#d7a2ab", "#ff2cff")),
             ]
         )
 
     def test_serial_exception(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
-        config = make_config()
+        config = lib.make_config()
         keyboard_open = fixtures.keyboard_open
         keyboard_open.side_effect = serial.SerialException("oh no!")
         stderr = io.StringIO()
@@ -98,7 +98,7 @@ class PluginTests(TestCase):
 
     def test_multiple_devices(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
-        config = make_config()
+        config = lib.make_config()
         fixtures.comports.return_value = [
             mock.Mock(manufacturer="DYGMA", device="/dev/foo"),
             mock.Mock(manufacturer="DYGMA", device="/dev/bar"),
@@ -116,7 +116,7 @@ class PluginTests(TestCase):
 class MaybeColorizeKeyboardTests(TestCase):
     def test_colorizes(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
-        config = make_config()
+        config = lib.make_config()
 
         is_colorized = maybe_colorize_keyboard("/dev/null", colors, config)
 
@@ -125,7 +125,7 @@ class MaybeColorizeKeyboardTests(TestCase):
 
     def test_with_exception(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
-        config = make_config()
+        config = lib.make_config()
         colorize_keyboard = fixtures.colorize_keyboard
         colorize_keyboard.side_effect = serial.SerialException("oops!")
         stderr = io.StringIO()

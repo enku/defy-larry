@@ -1,4 +1,5 @@
 # pylint: disable=missing-docstring,redefined-outer-name
+import configparser
 import random as _random
 from typing import Sequence
 from unittest import mock
@@ -6,12 +7,11 @@ from unittest import mock
 import larry.color
 import numpy as np
 import serial
+from larry.config import ConfigType
 from unittest_fixtures import FixtureContext, Fixtures, fixture
 
 import defy_larry
 from defy_larry import keyboard as kb
-
-from . import make_colors
 
 FC = FixtureContext
 Mock = mock.Mock
@@ -65,3 +65,25 @@ def colors(
     _: Fixtures, colors: str = "#a916e2 #ffc0cb #e2bd16"
 ) -> list[larry.color.Color]:
     return make_colors(*colors.split())
+
+
+def make_colors(*color_str: str) -> larry.color.ColorList:
+    return [larry.color.Color(s) for s in color_str]
+
+
+def make_config(effect: str = "pastelize", override: str = "") -> ConfigType:
+    parser = configparser.ConfigParser()
+    parser.add_section("defy_larry")
+    config = ConfigType(parser, name="defy_larry")
+    config["effect"] = effect
+
+    if override:
+        config["override"] = override
+
+    return config
+
+
+def make_palette_str(colors: Sequence[larry.color.Color]) -> bytes:
+    cstr = " ".join(f"{r} {g} {b} {w}" for c in colors for r, g, b, w in [c.to_rgbw()])
+
+    return cstr.encode("ascii") + b"\r\n"
