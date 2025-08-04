@@ -13,6 +13,10 @@ license = {text = "GPL3+"}
 [project.entry-points."larry.plugins"]
 defy_larry = "defy_larry:plugin"
 
+[project.urls]
+homepage = "https://github.com/enku/defy-larry"
+repository = "https://github.com/enku/defy-larry"
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
