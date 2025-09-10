@@ -27,7 +27,7 @@ class PluginTests(TestCase):
         kb.assert_has_calls(
             [
                 mock.call.get_palette(),
-                mock.call.set_palette(lib.make_colors("#ffe77f", "#ff7f95", "#db7fff")),
+                mock.call.set_palette(lib.make_colors("#e2bd16", "#ffc0cb", "#a916e2")),
             ]
         )
 
@@ -43,13 +43,13 @@ class PluginTests(TestCase):
         kb.assert_has_calls(
             [
                 mock.call.get_palette(),
-                mock.call.set_palette(lib.make_colors("#ffe77f", "#ff7f95", "#000000")),
+                mock.call.set_palette(lib.make_colors("#e2bd16", "#ffc0cb", "#000000")),
             ]
         )
 
     def test_soften_effect(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
-        config = lib.make_config(effect="soften")
+        config = lib.make_config(filter="soften")
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
@@ -66,7 +66,7 @@ class PluginTests(TestCase):
 
     def test_luminize_effect(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
-        config = lib.make_config(effect="luminize")
+        config = lib.make_config(filter="luminize")
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value

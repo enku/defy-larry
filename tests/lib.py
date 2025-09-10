@@ -71,14 +71,13 @@ def make_colors(*color_str: str) -> larry.color.ColorList:
     return [larry.color.Color(s) for s in color_str]
 
 
-def make_config(effect: str = "pastelize", override: str = "") -> ConfigType:
+def make_config(**options: str) -> ConfigType:
     parser = configparser.ConfigParser()
     parser.add_section("defy_larry")
     config = ConfigType(parser, name="defy_larry")
-    config["effect"] = effect
 
-    if override:
-        config["override"] = override
+    for name, value in options.items():
+        config[name] = value
 
     return config
 

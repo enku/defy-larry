@@ -17,14 +17,11 @@ import sys
 import serial
 from larry.color import Color, ColorList
 from larry.config import ConfigType
+from larry.plugins import apply_plugin_filter
 from larry.utils import clip
 from serial.tools.list_ports import comports
 
 from defy_larry.keyboard import Keyboard
-
-# Value to use for the "luminize" effect. This should probably be made an option at some
-# point. I'm waiting until I move "enhance" into larry proper.
-LUMINANCE = 178.5
 
 
 def plugin(colors: ColorList, config: ConfigType) -> None:
@@ -54,31 +51,15 @@ def colorize_keyboard(device: str, colors: ColorList, config: ConfigType) -> Non
     with Keyboard.open(device) as kb:
         palette = kb.get_palette()
         palette_size = len(palette)
-        intensity = config.getfloat("intensity", fallback=0.0)
         colors = (
             list(Color.generate_from(colors, palette_size))
             if len(colors) <= palette_size
             else Color.dominant(colors, palette_size)
         )
-        colors = [enhance(c, config).intensify(intensity) for c in colors]
+        colors = apply_plugin_filter(colors, config)
         for index, color in get_overrides(config):
             colors[index] = color
         kb.set_palette(colors)
-
-
-def enhance(color: Color, config: ConfigType, default: str = "none") -> Color:
-    """Maybe enhance color based on config"""
-    effect = config.get("effect", fallback=default)
-
-    match effect:
-        case "pastelize":
-            color = color.pastelize()
-        case "soften":
-            color = color.soften()
-        case "luminize":
-            color = color.luminize(LUMINANCE)
-
-    return color
 
 
 def get_overrides(config: ConfigType) -> list[tuple[int, Color]]:
