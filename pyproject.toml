@@ -50,3 +50,6 @@ dev = [
     "coverage>=7.8.0",
     "unittest-fixtures>=1.0.0",
 ]
+
+[tool.pylint.variables]
+init-import = "yes"

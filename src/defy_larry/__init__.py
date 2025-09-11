@@ -18,7 +18,6 @@ import serial
 from larry.color import Color, ColorList
 from larry.config import ConfigType
 from larry.plugins import apply_plugin_filter
-from larry.utils import clip
 from serial.tools.list_ports import comports
 
 from defy_larry.keyboard import Keyboard
