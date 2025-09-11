@@ -1,6 +1,7 @@
 """Dygma Keyboard interface"""
 
 import sys
+import time
 from contextlib import contextmanager
 from typing import Generator, Self
 
@@ -8,7 +9,9 @@ import serial
 from larry.color import Color, ColorList
 
 BAUD_RATE = 115200
+DELAY = 0.1
 ENCODING = "utf-8"
+MAX_READ_ATTEMPTS = 10
 TIMEOUT = 5.0
 
 
@@ -48,13 +51,20 @@ class Keyboard:
         """Send the given command to the keyboard"""
         serial_device = self.serial_device
         serial_device.write(f"{command}\n".encode(ENCODING))
+        time.sleep(DELAY)
         serial_device.flush()
 
     def receive(self) -> str:
         """Recieve a line from the keyboard"""
         serial_device = self.serial_device
+        attempts = 0
 
-        return serial_device.read_until().decode(ENCODING).rstrip()
+        while not (response := serial_device.read_until().decode(ENCODING).rstrip()):
+            if (attempts := attempts + 1) >= MAX_READ_ATTEMPTS:
+                break
+            time.sleep(DELAY)
+
+        return response
 
     @classmethod
     @contextmanager

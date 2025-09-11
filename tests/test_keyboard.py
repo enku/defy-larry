@@ -1,7 +1,7 @@
 # pylint: disable=missing-docstring
 import io
 from contextlib import redirect_stderr
-from unittest import TestCase
+from unittest import TestCase, mock
 
 from larry.color import Color
 from unittest_fixtures import Fixtures, given
@@ -19,6 +19,34 @@ class InitializerTests(TestCase):
         kb = keyboard.Keyboard(serial_device)
 
         self.assertEqual(kb.serial_device, serial_device)
+
+
+@given(sleep=lambda _: mock.patch("defy_larry.keyboard.time.sleep"))
+@given(lib.serial_device)
+class RecieveTests(TestCase):
+    def test(self, fixtures: Fixtures) -> None:
+        serial_device = fixtures.serial_class
+        kb = keyboard.Keyboard(serial_device)
+        serial_device.read_until.side_effect = (b"", b"test")
+
+        with fixtures.sleep as sleep:
+            data = kb.receive()
+
+        self.assertEqual(data, "test")
+        sleep.assert_called_once_with(keyboard.DELAY)
+
+    def test_after_max_read_attempts(self, fixtures: Fixtures):
+        serial_device = fixtures.serial_class
+        kb = keyboard.Keyboard(serial_device)
+        serial_device.read_until.side_effect = tuple(
+            b"" for _ in range(keyboard.MAX_READ_ATTEMPTS)
+        )
+
+        with fixtures.sleep as sleep:
+            data = kb.receive()
+
+        self.assertEqual(data, "")
+        self.assertEqual(sleep.call_count, keyboard.MAX_READ_ATTEMPTS - 1)
 
 
 @given(lib.serial_device)
