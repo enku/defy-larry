@@ -15,6 +15,7 @@ The Larry plugin for Digma Defy.
 import sys
 
 import serial
+from larry import pool
 from larry.color import Color, ColorList
 from larry.config import ConfigType
 from larry.plugins import apply_plugin_filter
@@ -23,13 +24,15 @@ from serial.tools.list_ports import comports
 from defy_larry.keyboard import Keyboard
 
 
-def plugin(colors: ColorList, config: ConfigType) -> None:
+async def plugin(colors: ColorList, config: ConfigType) -> None:
     """Dygma Defy plugin"""
     for device in [p.device for p in comports() if p.manufacturer == "DYGMA"]:
-        maybe_colorize_keyboard(device, colors, config)
+        await maybe_colorize_keyboard(device, colors, config)
 
 
-def maybe_colorize_keyboard(device: str, colors: ColorList, config: ConfigType) -> bool:
+async def maybe_colorize_keyboard(
+    device: str, colors: ColorList, config: ConfigType
+) -> bool:
     """Colorize the keyboard at the given device using the given source colors
 
     Return True.
@@ -37,7 +40,7 @@ def maybe_colorize_keyboard(device: str, colors: ColorList, config: ConfigType) 
     If a SerialException occurs, write the message to stderr and return False
     """
     try:
-        colorize_keyboard(device, colors, config)
+        await pool.run(colorize_keyboard, device, colors, config)
         return True
     except serial.SerialException as error:
         errmsg(f"An occurred while attempting to colorize the {device} keyboard:")

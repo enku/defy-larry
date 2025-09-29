@@ -1,7 +1,7 @@
 # pylint: disable=missing-docstring
 import io
 from contextlib import redirect_stderr
-from unittest import TestCase, mock
+from unittest import IsolatedAsyncioTestCase, TestCase, mock
 
 import serial
 from larry.color import Color
@@ -13,15 +13,15 @@ from . import lib
 
 
 @given(lib.keyboard_open, lib.random, lib.comports, lib.colors)
-class PluginTests(TestCase):
-    def test(self, fixtures: Fixtures) -> None:
+class PluginTests(IsolatedAsyncioTestCase):
+    async def test(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
         config = lib.make_config()
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
         kb.get_palette.return_value = [Color() for _ in range(3)]
-        plugin(colors, config)
+        await plugin(colors, config)
 
         keyboard_open.assert_called_once_with("/dev/null")
         kb.assert_has_calls(
@@ -31,14 +31,14 @@ class PluginTests(TestCase):
             ]
         )
 
-    def test_override_option(self, fixtures: Fixtures) -> None:
+    async def test_override_option(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
         config = lib.make_config(override="2=000000")
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
         kb.get_palette.return_value = [Color() for _ in range(3)]
-        plugin(colors, config)
+        await plugin(colors, config)
 
         kb.assert_has_calls(
             [
@@ -47,14 +47,14 @@ class PluginTests(TestCase):
             ]
         )
 
-    def test_soften_effect(self, fixtures: Fixtures) -> None:
+    async def test_soften_effect(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
         config = lib.make_config(filter="soften")
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
         kb.get_palette.return_value = [Color() for _ in range(3)]
-        plugin(colors, config)
+        await plugin(colors, config)
 
         keyboard_open.assert_called_once_with("/dev/null")
         kb.assert_has_calls(
@@ -64,14 +64,14 @@ class PluginTests(TestCase):
             ]
         )
 
-    def test_luminize_effect(self, fixtures: Fixtures) -> None:
+    async def test_luminize_effect(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
         config = lib.make_config(filter="luminize")
 
         keyboard_open = fixtures.keyboard_open
         kb = keyboard_open.return_value.__enter__.return_value
         kb.get_palette.return_value = [Color() for _ in range(3)]
-        plugin(colors, config)
+        await plugin(colors, config)
 
         keyboard_open.assert_called_once_with("/dev/null")
         kb.assert_has_calls(
@@ -81,7 +81,7 @@ class PluginTests(TestCase):
             ]
         )
 
-    def test_serial_exception(self, fixtures: Fixtures) -> None:
+    async def test_serial_exception(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
         config = lib.make_config()
         keyboard_open = fixtures.keyboard_open
@@ -89,14 +89,14 @@ class PluginTests(TestCase):
         stderr = io.StringIO()
 
         with redirect_stderr(stderr):
-            plugin(colors, config)
+            await plugin(colors, config)
 
         self.assertEqual(
             "An occurred while attempting to colorize the /dev/null keyboard:\noh no!\n",
             stderr.getvalue(),
         )
 
-    def test_multiple_devices(self, fixtures: Fixtures) -> None:
+    async def test_multiple_devices(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
         config = lib.make_config()
         fixtures.comports.return_value = [
@@ -107,23 +107,23 @@ class PluginTests(TestCase):
         kb = keyboard_open.return_value.__enter__.return_value
         kb.get_palette.return_value = [Color() for _ in range(3)]
 
-        plugin(colors, config)
+        await plugin(colors, config)
 
         self.assertEqual(keyboard_open.call_count, 2)
 
 
 @given(lib.colorize_keyboard, lib.colors)
-class MaybeColorizeKeyboardTests(TestCase):
-    def test_colorizes(self, fixtures: Fixtures) -> None:
+class MaybeColorizeKeyboardTests(IsolatedAsyncioTestCase):
+    async def test_colorizes(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
         config = lib.make_config()
 
-        is_colorized = maybe_colorize_keyboard("/dev/null", colors, config)
+        is_colorized = await maybe_colorize_keyboard("/dev/null", colors, config)
 
         self.assertIs(True, is_colorized)
         fixtures.colorize_keyboard.assert_called_once_with("/dev/null", colors, config)
 
-    def test_with_exception(self, fixtures: Fixtures) -> None:
+    async def test_with_exception(self, fixtures: Fixtures) -> None:
         colors = fixtures.colors
         config = lib.make_config()
         colorize_keyboard = fixtures.colorize_keyboard
@@ -131,7 +131,7 @@ class MaybeColorizeKeyboardTests(TestCase):
         stderr = io.StringIO()
 
         with redirect_stderr(stderr):
-            is_colorized = maybe_colorize_keyboard("/dev/null", colors, config)
+            is_colorized = await maybe_colorize_keyboard("/dev/null", colors, config)
 
         self.assertIs(False, is_colorized)
         self.assertEqual(
