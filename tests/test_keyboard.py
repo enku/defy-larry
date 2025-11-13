@@ -22,12 +22,11 @@ class InitializerTests(TestCase):
 
 
 @given(sleep=lambda _: mock.patch("defy_larry.keyboard.time.sleep"))
-@given(lib.serial_device)
+@given(lib.keyboard)
 class RecieveTests(TestCase):
     def test(self, fixtures: Fixtures) -> None:
-        serial_device = fixtures.serial_class
-        kb = keyboard.Keyboard(serial_device)
-        serial_device.read_until.side_effect = (b"", b"test")
+        kb = fixtures.keyboard
+        kb.serial_device.read_until.side_effect = (b"", b"test")
 
         with fixtures.sleep as sleep:
             data = kb.receive()
@@ -36,9 +35,8 @@ class RecieveTests(TestCase):
         sleep.assert_called_once_with(keyboard.DELAY)
 
     def test_after_max_read_attempts(self, fixtures: Fixtures):
-        serial_device = fixtures.serial_class
-        kb = keyboard.Keyboard(serial_device)
-        serial_device.read_until.side_effect = tuple(
+        kb = fixtures.keyboard
+        kb.serial_device.read_until.side_effect = tuple(
             b"" for _ in range(keyboard.MAX_READ_ATTEMPTS)
         )
 
@@ -49,11 +47,10 @@ class RecieveTests(TestCase):
         self.assertEqual(sleep.call_count, keyboard.MAX_READ_ATTEMPTS - 1)
 
 
-@given(lib.serial_device)
+@given(lib.keyboard)
 class GetPaletteTests(TestCase):
     def test(self, fixtures: Fixtures):
-        serial_device = fixtures.serial_device
-        kb = keyboard.Keyboard(serial_device)
+        kb = fixtures.keyboard
         expected = [
             Color(127, 253, 255),
             Color(127, 158, 255),
@@ -72,19 +69,18 @@ class GetPaletteTests(TestCase):
             Color(183, 255, 127),
             Color(255, 142, 127),
         ]
-        serial_device.read_until.return_value = lib.make_palette_str(expected)
+        kb.serial_device.read_until.return_value = lib.make_palette_str(expected)
 
         colors = kb.get_palette()
 
         self.assertEqual(expected, colors)
 
     def test_not_multiple_of_4(self, fixtures: Fixtures) -> None:
-        serial_device = fixtures.serial_device
-        kb = keyboard.Keyboard(serial_device)
+        kb = fixtures.keyboard
         expected = [Color(127, 253, 255), Color(127, 158, 255), Color(226, 255, 127)]
         palette_str = lib.make_palette_str(expected).decode("ascii").strip()
         palette_str += " 0 0 0\r\n"
-        serial_device.read_until.return_value = palette_str.encode("ascii")
+        kb.serial_device.read_until.return_value = palette_str.encode("ascii")
         stderr = io.StringIO()
 
         with redirect_stderr(stderr):
@@ -97,11 +93,10 @@ class GetPaletteTests(TestCase):
         )
 
 
-@given(lib.serial_device)
+@given(lib.keyboard)
 class SetPaletteTests(TestCase):
     def test(self, fixtures: Fixtures) -> None:
-        serial_device = fixtures.serial_device
-        kb = keyboard.Keyboard(serial_device)
+        kb = fixtures.keyboard
         colors = [
             Color(127, 253, 255),
             Color(127, 158, 255),
@@ -130,7 +125,7 @@ class SetPaletteTests(TestCase):
             b" 73 128 127 96 0 128 127 128 78 0 127 128 81 0 127 56 128 0 127"
             b" 128 15 0 127\n"
         )
-        serial_device.write.assert_called_once_with(expected)
+        kb.serial_device.write.assert_called_once_with(expected)
 
     def test_empty_color_list(self, fixtures: Fixtures) -> None:
         serial_device = fixtures.serial_device

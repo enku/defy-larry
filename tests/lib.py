@@ -32,6 +32,12 @@ def serial_device(fixtures: Fixtures, port: str = "/dev/ttyACM0") -> Mock:
     )
 
 
+@fixture(serial_device)
+def keyboard(fixtures: Fixtures) -> kb.Keyboard:
+    """Keyboard instance with mock serial_device"""
+    return kb.Keyboard(fixtures.serial_device)
+
+
 @fixture()
 def keyboard_open(_: Fixtures) -> FC[Mock]:
     with mock.patch.object(kb.Keyboard, "open") as mock_obj:
