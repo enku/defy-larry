@@ -13,12 +13,11 @@ from unittest_fixtures import FixtureContext, Fixtures, fixture
 import defy_larry
 from defy_larry import keyboard as kb
 
-FC = FixtureContext
 Mock = mock.Mock
 
 
 @fixture()
-def serial_class(_: Fixtures) -> FC[Mock]:
+def serial_class(_: Fixtures) -> FixtureContext[Mock]:
     """Mock serial.Serial class"""
     with mock.patch.object(serial, "Serial", autospec=True, create=False) as mock_obj:
         yield mock_obj
@@ -39,20 +38,22 @@ def keyboard(fixtures: Fixtures) -> kb.Keyboard:
 
 
 @fixture()
-def keyboard_open(_: Fixtures) -> FC[Mock]:
+def keyboard_open(_: Fixtures) -> FixtureContext[Mock]:
     with mock.patch.object(kb.Keyboard, "open") as mock_obj:
         yield mock_obj
 
 
 @fixture()
-def random(_: Fixtures, seed: int = 1) -> FC[None]:
+def random(_: Fixtures, seed: int = 1) -> FixtureContext[None]:
     with mock.patch.object(larry.color, "random", _random.Random(seed)):
         np.random.rand(seed)
         yield
 
 
 @fixture()
-def comports(_: Fixtures, devices: Sequence[str] = ("/dev/null",)) -> FC[Mock]:
+def comports(
+    _: Fixtures, devices: Sequence[str] = ("/dev/null",)
+) -> FixtureContext[Mock]:
     with mock.patch.object(defy_larry, "comports") as mock_obj:
         mock_obj.return_value = [
             mock.Mock(manufacturer="DYGMA", device=device) for device in devices
@@ -61,7 +62,7 @@ def comports(_: Fixtures, devices: Sequence[str] = ("/dev/null",)) -> FC[Mock]:
 
 
 @fixture()
-def colorize_keyboard(_: Fixtures) -> FC[Mock]:
+def colorize_keyboard(_: Fixtures) -> FixtureContext[Mock]:
     with mock.patch.object(defy_larry, "colorize_keyboard") as mock_obj:
         yield mock_obj
 
